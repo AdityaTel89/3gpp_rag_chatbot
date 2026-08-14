@@ -1,0 +1,158 @@
+[
+  {
+    "query": "What is the role of the AMF in the 5G Core network?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "How is the SMF selected by the AMF?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "What are the main functions of the UPF?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "Describe the concept of Network Slicing in 5GS.",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "What is the difference between an S-NSSAI and an NSI ID?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "How does 5G handle roaming scenarios (LBO vs Home-Routed)?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "What are the states in the RRC protocol in NR?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 38.300"]
+  },
+  {
+    "query": "Explain the difference between RRC_IDLE and RRC_INACTIVE.",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 38.300"]
+  },
+  {
+    "query": "What is the overall architecture of the NG-RAN?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 38.300"]
+  },
+  {
+    "query": "Describe the split between CU and DU in the gNB.",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 38.300"]
+  },
+  {
+    "query": "How does Dual Connectivity (EN-DC) work between LTE and NR?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 38.300"]
+  },
+  {
+    "query": "What are the logical channels and transport channels used in NR?",
+    "type": "in_scope",
+    "expected_abstain": false,
+    "expected_sources": ["TS 38.300"]
+  },
+  {
+    "query": "What happens if a UE loses connectivity while transitioning states?",
+    "type": "ambiguous",
+    "expected_abstain": false,
+    "expected_sources": []
+  },
+  {
+    "query": "Explain how PDU sessions are managed for IoT devices.",
+    "type": "ambiguous",
+    "expected_abstain": false,
+    "expected_sources": []
+  },
+  {
+    "query": "How is latency minimized in the access network?",
+    "type": "ambiguous",
+    "expected_abstain": false,
+    "expected_sources": []
+  },
+  {
+    "query": "Can a user equipment connect to multiple network slices at the exact same time?",
+    "type": "ambiguous",
+    "expected_abstain": false,
+    "expected_sources": ["TS 23.501"]
+  },
+  {
+    "query": "What is the capital of France?",
+    "type": "out_of_scope",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "How do I configure a Cisco router for BGP?",
+    "type": "out_of_scope",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "What is the recipe for chocolate chip cookies?",
+    "type": "out_of_scope",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "Explain the plot of the movie Inception.",
+    "type": "out_of_scope",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "How does the TCP three-way handshake work?",
+    "type": "out_of_scope",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "What are the differences between Python and JavaScript?",
+    "type": "out_of_scope",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "According to TS 23.501, how does the Quantum Routing Function (QRF) manage entangled packets?",
+    "type": "adversarial",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "What is the procedure for AMF selection as defined in TS 38.300?",
+    "type": "adversarial",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "Describe the 6G Holographic Beamforming architecture in TS 23.501.",
+    "type": "adversarial",
+    "expected_abstain": true,
+    "expected_sources": []
+  },
+  {
+    "query": "How does the UE handle the RRC_SLEEP state introduced in Rel-19?",
+    "type": "adversarial",
+    "expected_abstain": true,
+    "expected_sources": []
+  }
+]

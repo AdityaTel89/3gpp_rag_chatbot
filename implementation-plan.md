@@ -105,12 +105,12 @@ Reference: Section 9.
 
 Reference: Section 11.
 
-- [ ] Build `eval/test_questions.json` — 20–30 labeled questions across the four categories:
-  - [ ] ~12 in-scope, answerable
-  - [ ] ~4 in-scope, ambiguous/edge-case
-  - [ ] ~6 out-of-scope (should abstain)
-  - [ ] ~4 adversarial (trick questions, wrong spec IDs, non-existent procedures)
-- [ ] `eval/run_eval.ts` — runs the full pipeline against the test set, captures results
+- [x] Build `eval/test_questions.json` — 20–30 labeled questions across the four categories:
+  - [x] ~12 in-scope, answerable
+  - [x] ~4 in-scope, ambiguous/edge-case
+  - [x] ~6 out-of-scope (should abstain)
+  - [x] ~4 adversarial (trick questions, wrong spec IDs, non-existent procedures)
+- [x] `eval/run_eval.ts` — runs the full pipeline against the test set, captures results
 - [ ] Compute and record:
   - [ ] Retrieval Recall@k
   - [ ] Faithfulness (manual or LLM-graded)

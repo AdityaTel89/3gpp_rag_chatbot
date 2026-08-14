@@ -10,7 +10,8 @@
     "spot-check": "tsx scripts/spot-check.ts",
     "ingest": "tsx scripts/ingest.ts",
     "ingest:dry": "tsx scripts/ingest.ts --dry-run",
-    "ingest:inspect": "tsx scripts/ingest.ts --dry-run --inspect 5"
+    "ingest:inspect": "tsx scripts/ingest.ts --dry-run --inspect 5",
+    "eval": "tsx ../eval/run_eval.ts"
   },
   "keywords": [],
   "author": "",

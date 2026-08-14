@@ -17,7 +17,8 @@
   "include": [
     "src/**/*",
     "scripts/**/*",
-    "../shared/**/*"
+    "../shared/**/*",
+    "../eval/**/*"
   ],
   "ts-node": {
     "transpileOnly": true,

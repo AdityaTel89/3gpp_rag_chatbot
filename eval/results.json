@@ -1,0 +1,788 @@
+{
+  "metrics": {
+    "total_questions": 26,
+    "abstention_accuracy": "65.38%",
+    "false_abstention_rate": "34.62%",
+    "retrieval_recall": "46.15%"
+  },
+  "results": [
+    {
+      "query": "What is the role of the AMF in the 5G Core network?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 23.501",
+          "clause": "5.21.1.1 — TNL associations",
+          "page": 290,
+          "snippet": "5G - AN node shall have the capability to support multiple TNL associations per AMF, i.e. AMF name. An AMF shall provide the 5G - AN node with the wei..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.19.5.2 — AMF Overload Control",
+          "page": 282,
+          "snippet": ", the 5G - AN indicates to the UE an appropriate wait timer that limits  further 5G - AN signalling connection requests until the wait timer expires. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.21.2.1 — AMF Addition/Update",
+          "page": 291,
+          "snippet": "should allow the possibility of AMFs within  the AMF Set to advertise the same AMF Pointer and/or distinct AMF Pointer value(s) to the 5G - AN node. T..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.21.2 — AMF Management",
+          "page": 291,
+          "snippet": "should allow the possibility of AMFs within  the AMF Set to advertise the same AMF Pointer and/or distinct AMF Pointer value(s) to the 5G - AN node. T..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "4.2.2 — Network Functions and entities",
+          "page": 35,
+          "snippet": "The 5G System architecture consists of the following network functions (NF) :   -   Authentication Server Function (AUSF). -   Access and Mobility Man..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.21.1 — Architectural support for N2",
+          "page": 290,
+          "snippet": "5.21.1.1   TNL associations   5G - AN node shall have the capability to support multiple TNL associations per AMF, i.e. AMF name. An AMF shall provide..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.21.1.2 — NGAP UE - TNLA - binding",
+          "page": 291,
+          "snippet": "F Set to advertise the same AMF Pointer and/or distinct AMF Pointer value(s) to the 5G - AN node. To support the legacy EPC core network entity (i.e. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "4.2.7 — Reference points",
+          "page": 46,
+          "snippet": "The 5G System Architecture contains the following reference points:   N1:   Reference point between the UE and the AMF. N2:   Reference point between ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.4.4.3 — Paging assistance information",
+          "page": 109,
+          "snippet": "ells to each of these RAN  nodes, in order to optimize the probability of successfu l paging while minimizing the signalling load on the  radio path. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.6.2 — Interaction between AMF and SMF",
+          "page": 124,
+          "snippet": "The AMF and SMF are separate Network Functions...."
+        }
+      ],
+      "answer": "The AMF (Access and Mobility Management Function) has several roles in the 5G Core network, including:\n\n- Providing the 5G - AN node with weight factors for each TNL association of the AMF [1].\n- Requesting the 5G - AN node to add or remove TNL associations to the AMF [1].\n- Indicating to the 5G - AN node the set of TNL associations used for UE-associated signalling and the set of TNL associations used for non-UE associated signalling [1].\n- Advertising the same AMF Pointer and/or distinct AMF Pointer value(s) to the 5G - AN node [3, 4].\n- Publishing information about the AMF in the DNS system to support legacy EPC core network entity (i.e. MME) discovery and communication [3, 4].\n- Partitioning GUMMEI and GUAMI encoding space to avoid overlapping values and enable MME discovery of an AMF without ambiguity [3, 4].\n- Providing the 5G System architecture with the capability to support multiple TNL associations per AMF [6].\n- Indicating to the 5G - AN node the set of TNL associations used for UE-associated signalling and the set of TNL associations used for non-UE associated signalling [6].\n- Supporting the legacy EPC core network entity (i.e. MME) to discover and communicate with the AMF [7].\n- Maintaining support for emergency services and for MPS during an overload situation [2].\n- Recovering and either allowing the possibility of AMFs within the AMF Set to advertise the same AMF Pointer and/or distinct AMF Pointer value(s) to the 5G - AN node or partitioning GUMMEI and GUAMI encoding space to avoid overlapping values [2, 7].\n\nThe AMF is also a Network Function in the 5G System architecture, as defined in TS 23.501, 4.2.2 [5].",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": true,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "How is the SMF selected by the AMF?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 23.501",
+          "clause": "6.6.2 — of  TS",
+          "page": 235,
+          "snippet": "and local operator policies, when the UE triggers PDU Session  Establishment. The select ed SMF establishes a PDU Session based on S - NSSAI and DNN. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "6.6.2 — of  TS",
+          "page": 235,
+          "snippet": "23.503   [45]. If the AMF is not able to determine the appropriate NRF to query for the S - NSSAI provided by the UE, the AMF may  query the NSSF with..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.15.5.3 — Establishing a PDU Session in a Network Slice",
+          "page": 235,
+          "snippet": "level and/or Observe Service Experience and/or  Dispersion analytics from NWDAF. The IP address or FQDN of the NSSF is locally configured in the AMF. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.16.4.5 — SMF and UPF selection function for Emergency Services",
+          "page": 257,
+          "snippet": "When a SMF is selected for Emergency Services, the SMF selection function described in clause   6.3.2 for normal  services is applied to the Emergency..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.6.2 — Interaction between AMF and SMF",
+          "page": 124,
+          "snippet": "The AMF and SMF are separate Network Functions...."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "2.8.5.2 — Reference Architecture",
+          "page": 59,
+          "snippet": "The architecture diagram below is based on the general 5GS architecture diagrams in clause   4.2 and shows the main  network functions required to sup..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "1 — B   Extending the significance of the locality parameter",
+          "page": 552,
+          "snippet": "16.1.0   2019 - 06   SP#84   SP - 190399   1315   2   A   Correcting AMF selection   16.1.0   2019 - 06   SP#84   SP - 190422   1316   1   C   Clarify..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.4.6.2 — Core Network assisted RAN parameters tuning",
+          "page": 112,
+          "snippet": "Core Network assisted RAN parameters tuning aids the RAN to minimize the UE state transitions and achieve optimum  network behaviour. How the RAN uses..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "6.3.2 — SMF discovery and selection",
+          "page": 446,
+          "snippet": "The SMF selection functionality is supported by the AMF and SCP and is used to allocate an SMF that shall manage the  PDU Session. The SMF selection p..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.5.3.2 — UE reachability in CM - CONNECTED",
+          "page": 121,
+          "snippet": "is always up to date using the procedure defined in  clause   4.16.12.2 of  TS   23.502   [3] and therefore the UE requested DNN will be up to date. I..."
+        }
+      ],
+      "answer": "The SMF selection functionality is supported by the AMF and SCP and is used to allocate an SMF that shall manage the PDU Session [9]. The SMF selection procedures are described in clause 4.3.2.2.3 of TS 23.502 [3].",
+      "confidence": 0.02813852813852814,
+      "retrieval_success": true,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What are the main functions of the UPF?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "Describe the concept of Network Slicing in 5GS.",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 38.300",
+          "clause": "3.1 — General Principles and Requirements",
+          "page": 137,
+          "snippet": "pports a  maximum of 8 slices simultaneously. Network Slicing is a concept to allow differentiated treatment depending on each customer requirements. ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3 — Network Slicing",
+          "page": 137,
+          "snippet": "pports a  maximum of 8 slices simultaneously. Network Slicing is a concept to allow differentiated treatment depending on each customer requirements. ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "16.2.1.2 — MMTEL voice quality/coverage enhancements",
+          "page": 137,
+          "snippet": "The air interface delay budget can be relaxed to increase the robustness of the transmission for coverage enhancement. Such relaxation may be achieved..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3.1 — General Principles and Requirements",
+          "page": 137,
+          "snippet": "In this clause, the general principles and requirements related to the realization of network slicing in the NG - RAN for  NR connected to 5GC and for..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3 — Network Slicing",
+          "page": 137,
+          "snippet": "16 .3.1   General Principles and Requirements   In this clause, the general principles and requirements related to the realization of network slicing ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.18.5 — Network Sharing and Network Slicing",
+          "page": 280,
+          "snippet": "As defined in clause   5.15.1, a Network Slice is defined within a PLMN or SNPN. Network sharing is performed among  different PLMNs and/or SNPNs. In ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.18.4 — Network selection by the network",
+          "page": 280,
+          "snippet": "As defined in clause   5.15.1, a Network Slice is defined within a PLMN or SNPN. Network sharing is performed among  different PLMNs and/or SNPNs. In ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "4.1 — General concepts",
+          "page": 34,
+          "snippet": "The 5G System architecture is defined to support data connectivity and services enabling deployments to use techniques  such as e.g. Network Function ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "16.2.1.2 — MMTEL voice quality/coverage enhancements",
+          "page": 137,
+          "snippet": "Slice Differentiator) field, which differentiates among Slices with same SST field and consist of 24  bits. The list includes at most 8 S - NSSAI(s). ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.15 — Network slicing",
+          "page": 221,
+          "snippet": "5.15.1   General   A Network Slice instance is defined within a PLMN   or within an SNPN   and shall include:   -   the Core Network Control Plane and..."
+        }
+      ],
+      "answer": "Network Slicing is a concept to allow differentiated treatment depending on each customer requirements [1], [2], [4], [5]. With slicing, it is possible for Mobile Network Operators (MNO) to consider customers as belonging to different tenant types with each having different service requirements that govern in terms of what slice types each tenant is eligible to use based on Service Level Agreement (SLA) and subscriptions [1], [2], [4], [5].",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": true,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What is the difference between an S-NSSAI and an NSI ID?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "How does 5G handle roaming scenarios (LBO vs Home-Routed)?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 23.501",
+          "clause": "3 — N4   N2",
+          "page": 55,
+          "snippet": "N1 1     Figure 4.2.8.2.3 - 3: Home - routed Roaming architecture for 5G Core Network with untrusted non - 3GPP  access  -   N3IWF in HPLMN..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "2 — N3   AMF",
+          "page": 55,
+          "snippet": "vSMF   UPF   Y1   Y2   hSMF   /     SMF   UPF   N9   N4   N16   N11   N1   NWu   N1   V PLMN   Non - 3GPP   Network s   HPLMN   N3IWF   N 3   N4   N2 ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "1 — V PLMN",
+          "page": 55,
+          "snippet": "Non - 3GPP   Network s   HPLMN   N3IWF   N 3   N4   N2   N1 1     Figure 4.2.8.2.3 - 3: Home - routed Roaming architecture for 5G Core Network with un..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "24 — N1 6",
+          "page": 66,
+          "snippet": "N 8     UE     SG W   E - UTRAN   N 10   N11   N4   v - PCF    N15   AMF   MME   N G - RAN   RAN   h - PCF    SMF +   PGW - C     UPF +   PGW - U     ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "9 — N4   N16",
+          "page": 55,
+          "snippet": "N11   N1   NWu   N1   V PLMN   Non - 3GPP   Network s   HPLMN   N3IWF   N 3   N4   N2   N1 1     Figure 4.2.8.2.3 - 3: Home - routed Roaming architect..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "4 — v - PCF",
+          "page": 66,
+          "snippet": "N15   AMF   MME   N G - RAN   RAN   h - PCF    SMF +   PGW - C     UPF +   PGW - U     UPF   v - SM F     Figure 4.3.2 - 2: Home - routed roaming arch..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "1 — Y2   hSMF",
+          "page": 55,
+          "snippet": "/     SMF   UPF   N9   N4   N16   N11   N1   NWu   N1   V PLMN   Non - 3GPP   Network s   HPLMN   N3IWF   N 3   N4   N2   N1 1     Figure 4.2.8.2.3 - ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.6.3 — Roaming",
+          "page": 126,
+          "snippet": "In the case of roaming the 5GC supports following possible deployments scenarios for a PDU Session:   -   \"Local Break Out\" (LBO) where the SMF and al..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "16 — V PLMN 2",
+          "page": 55,
+          "snippet": "Figure 4.2.8.2.3 - 2: Home - routed Roaming architecture for 5G Core Network with untrusted non - 3GPP  access  -   N3IWF in a different VPLMN than 3G..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "7 — U   N 2",
+          "page": 66,
+          "snippet": "S1 - U   S1 - MME   HSS  +  UDM     N 9   N 3   HPLMN   VPLMN   N 24   N1 6   N 8     UE     SG W   E - UTRAN   N 10   N11   N4   v - PCF    N15   AMF..."
+        }
+      ],
+      "answer": "The 5G Core Network supports two possible deployment scenarios for a PDU Session in the case of roaming: \"Local Break Out\" (LBO) and \"Home Routed\" (HR) [8]. \n\nIn the \"Local Break Out\" (LBO) scenario, the SMF and all UPF(s) involved by the PDU Session are under control of the VPLMN [8].\n\nIn the \"Home Routed\" (HR) scenario, the PDU Session is supported by a SMF function under control of the HPLMN, by a SMF function under control of the VPLMN, by at least one UPF under control of the HPLMN and by at least one UPF under control of the VPLMN [8].",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": true,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What are the states in the RRC protocol in NR?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 38.300"
+      ],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 23.501",
+          "clause": "3.3.2.5 — CM - CONNECTED with RRC Inactive state",
+          "page": 89,
+          "snippet": "RRC Inactive state applies to NG - RAN. UE support for RRC Inactive state is defined in TS   38.306   [69] for NR and  TS   36.306   [70] for E - UTRA..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "2 — R eference s",
+          "page": 12,
+          "snippet": "The following documents contain provisions which, through reference in this text, constitute provisions of the present  document. -   References are e..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "1 — Services and Functions",
+          "page": 57,
+          "snippet": "The main services and functions of the RRC sublayer  over the Uu interface  include:   -   Broadcast of System Information related to AS and NAS;   - ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "2 — Protocol States",
+          "page": 58,
+          "snippet": "RRC supports the following states which can be characterised as follows:   -   RRC_IDLE :   -   PLMN selection;   -   Broadcast of system information;..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.2.2 — Network selection",
+          "page": 81,
+          "snippet": "UE shall request to establish a n   RRC Connection first and  the NAS shall provide the RRC establishment related information to the low er   layer. T..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.2.5 — Access control and barring",
+          "page": 81,
+          "snippet": "When the UE needs to transmit an initial NAS message, the UE shall request to establish a n   RRC Connection first and  the NAS shall provide the RRC ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "2 — Con text",
+          "page": 89,
+          "snippet": "established   N2 Con text   release d   CM - IDLE     Figure  5.3.3.2.4 - 2:  C M state  transition   in  AMF   When a UE enters CM - IDLE state, the ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.2.1 — General",
+          "page": 81,
+          "snippet": "y in u se) is evaluated once the user is successfully identified and authenticated. This authorization is  executed during UE Registration procedure. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.2 — Network Access Control",
+          "page": 81,
+          "snippet": "y in u se) is evaluated once the user is successfully identified and authenticated. This authorization is  executed during UE Registration procedure. ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "6.12 — Multiple Transmit/Receive Point Operation",
+          "page": 57,
+          "snippet": "UE performs PUCCH  transmission of the same contents toward two TRPs with corresponding beam directions associated with different  spatial relations. ..."
+        }
+      ],
+      "answer": "The RRC protocol in NR supports the following states: \n\n- RRC_IDLE: \n  - PLMN selection;\n  - Broadcast of system information;\n  - Cell re-selection mobility;\n  - Paging for mobile terminated data is initiated by 5GC;\n  - Transfer of MBS broadcast data to the UE over MRB(s);\n  - DRX for CN paging configured by NAS.\n\n- RRC_INACTIVE: \n  - PLMN selection;\n  - Broadcast of system information;\n  - Cell re-selection mobility;\n  - Paging is initiated by NG-RAN (RAN paging);\n  - RAN-based notification area (RNA) is managed by NG-RAN;\n  - DRX for RAN paging configured by NG-RAN;\n  - 5GC - NG-RAN connection (both C/U-planes) is established for UE;\n  - The UE Inactive AS context is stored in NG-RAN and the UE;\n  - NG-RAN knows the RNA which the UE belongs to [4].",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": true,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "Explain the difference between RRC_IDLE and RRC_INACTIVE.",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 38.300"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "What is the overall architecture of the NG-RAN?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 38.300"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "Describe the split between CU and DU in the gNB.",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 38.300"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "How does Dual Connectivity (EN-DC) work between LTE and NR?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 38.300"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "What are the logical channels and transport channels used in NR?",
+      "type": "in_scope",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 38.300"
+      ],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": false,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "What happens if a UE loses connectivity while transitioning states?",
+      "type": "ambiguous",
+      "expected_abstain": false,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "Explain how PDU sessions are managed for IoT devices.",
+      "type": "ambiguous",
+      "expected_abstain": false,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": false,
+      "false_abstain": true
+    },
+    {
+      "query": "How is latency minimized in the access network?",
+      "type": "ambiguous",
+      "expected_abstain": false,
+      "expected_sources": [],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 23.501",
+          "clause": "5.7.3.4 — Packet Delay Budget",
+          "page": 166,
+          "snippet": "The Packet Delay Budget (PDB) defines an upper bound for the time that a packet may be delayed between the UE and  the N6 termination point at the  UP..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.31.7.5 — MICO mode and Periodic Registration Timer Control",
+          "page": 371,
+          "snippet": "ing functions as specified in clause   5.31.7. \"High latency\" refers to the initial  response time before norma l exchange of packets is established. ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "16.2.1.2 — MMTEL voice quality/coverage enhancements",
+          "page": 137,
+          "snippet": "The air interface delay budget can be relaxed to increase the robustness of the transmission for coverage enhancement. Such relaxation may be achieved..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.7.3.2 — Resource Type",
+          "page": 166,
+          "snippet": "itize QoS Flows based on other   parameters (e.g. resource type, radio condition) in order to optimize  application performance and network capacity. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "20 — ms  (NOTE 4)",
+          "page": 172,
+          "snippet": "10 - 4   63000  bytes   2000 ms   Visual content for  cloud/edge/split  rendering (see  TS   22.261   [2])   NOTE   1:   A packet which is delayed mor..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.31.15 — Control Plane Data Transfer Congestion Control",
+          "page": 377,
+          "snippet": "NAS level congestion control may be applied in general for all NAS messages. To enable congestion control for control  plane data transfer, a Control ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "10 — ms  (NOTE 4)",
+          "page": 172,
+          "snippet": "tracted from a given PDB to derive the packet delay budget that applies to the radio interface. When a  dynamic CN PDB is used, see clause   5.7.3.4. ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "16.1 — URLLC",
+          "page": 133,
+          "snippet": "16.1.1   Overview   The support of Ultra - Reliable and Low Latency Communications (URLLC) services is facilitated by the introduction of  the mechani..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "00 — bytes",
+          "page": 172,
+          "snippet": "2000 ms   Visual content for  cloud/edge/split  rendering (see  TS   22.261   [2])   NOTE   1:   A packet which is delayed more than PDB is not counte..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "4.15.9.4 — of TS",
+          "page": 313,
+          "snippet": "23.502   [3]. Based on this, NG - RAN provides the 5G access stratum time to the UE according to the Uu interface  time synchronization error budget a..."
+        }
+      ],
+      "answer": "To minimize latency in the access network, the air interface delay budget can be relaxed to increase the robustness of the transmission for coverage enhancement [3]. This can be achieved when a UE in good coverage indicates a preference to the gNB to reduce the local air interface delay by sending a DelayBudgetReport message to decrease the DRX cycle length, so that the E2E delay and jitter can be reduced [3].",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "Can a user equipment connect to multiple network slices at the exact same time?",
+      "type": "ambiguous",
+      "expected_abstain": false,
+      "expected_sources": [
+        "TS 23.501"
+      ],
+      "actual_abstain": false,
+      "citations": [
+        {
+          "spec": "TS 38.300",
+          "clause": "16.2.1.2 — MMTEL voice quality/coverage enhancements",
+          "page": 137,
+          "snippet": "Slice Differentiator) field, which differentiates among Slices with same SST field and consist of 24  bits. The list includes at most 8 S - NSSAI(s). ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.33.2 — Redundant transmission for high reliability communication",
+          "page": 401,
+          "snippet": "5.33.2.1   Dual Connectivity based end to end Redundant User Plane Paths   In order to support highly reliable URLLC services, a UE may set up two red..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.33.2.1 — Dual Connectivity based end to end Redundant User Plane Paths",
+          "page": 401,
+          "snippet": "In order to support highly reliable URLLC services, a UE may set up two redundant PDU Sessions over the 5G  network, such that the 5GS sets up the use..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3.1 — General Principles and Requirements",
+          "page": 137,
+          "snippet": "pports a  maximum of 8 slices simultaneously. Network Slicing is a concept to allow differentiated treatment depending on each customer requirements. ..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3 — Network Slicing",
+          "page": 137,
+          "snippet": "pports a  maximum of 8 slices simultaneously. Network Slicing is a concept to allow differentiated treatment depending on each customer requirements. ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.15 — Network slicing",
+          "page": 221,
+          "snippet": "5.15.1   General   A Network Slice instance is defined within a PLMN   or within an SNPN   and shall include:   -   the Core Network Control Plane and..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3.1 — General Principles and Requirements",
+          "page": 137,
+          "snippet": "In this clause, the general principles and requirements related to the realization of network slicing in the NG - RAN for  NR connected to 5GC and for..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.15.1 — General",
+          "page": 221,
+          "snippet": "A Network Slice instance is defined within a PLMN   or within an SNPN   and shall include:   -   the Core Network Control Plane and User Plane Network..."
+        },
+        {
+          "spec": "TS 38.300",
+          "clause": "3 — Network Slicing",
+          "page": 137,
+          "snippet": "16 .3.1   General Principles and Requirements   In this clause, the general principles and requirements related to the realization of network slicing ..."
+        },
+        {
+          "spec": "TS 23.501",
+          "clause": "5.15.12.2 — UE and UE configuration aspects",
+          "page": 245,
+          "snippet": "A UE may support the subscription - based restrictions to simultaneous registration of network slice s   feature. In this case,  the UE indicates its ..."
+        }
+      ],
+      "answer": "Yes, a network may serve a single UE with one or more Network Slice instances simultaneously via a 5G-AN regardless of the access type(s) over which the UE is registered (i.e. 3GPP Access and/or N3GPP Access) [6].",
+      "confidence": 0.01639344262295082,
+      "retrieval_success": true,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What is the capital of France?",
+      "type": "out_of_scope",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "How do I configure a Cisco router for BGP?",
+      "type": "out_of_scope",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What is the recipe for chocolate chip cookies?",
+      "type": "out_of_scope",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "Explain the plot of the movie Inception.",
+      "type": "out_of_scope",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "How does the TCP three-way handshake work?",
+      "type": "out_of_scope",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What are the differences between Python and JavaScript?",
+      "type": "out_of_scope",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "According to TS 23.501, how does the Quantum Routing Function (QRF) manage entangled packets?",
+      "type": "adversarial",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "What is the procedure for AMF selection as defined in TS 38.300?",
+      "type": "adversarial",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "Describe the 6G Holographic Beamforming architecture in TS 23.501.",
+      "type": "adversarial",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    },
+    {
+      "query": "How does the UE handle the RRC_SLEEP state introduced in Rel-19?",
+      "type": "adversarial",
+      "expected_abstain": true,
+      "expected_sources": [],
+      "actual_abstain": true,
+      "citations": [],
+      "answer": "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+      "confidence": 0.01639344262295082,
+      "abstain_success": true,
+      "false_abstain": false
+    }
+  ]
+}
