@@ -46,15 +46,15 @@ Reference: Section 4.1, Section 6.
 
 Reference: Section 4.2 (steps 1–6), Section 7.
 
-- [ ] `services/supabaseClient.ts` — typed client init
-- [ ] `services/retriever.ts`:
-  - [ ] Query embedding step
-  - [ ] Vector similarity query (`embedding <=> query_embedding`, top ~20)
-  - [ ] Keyword query (`fts @@ websearch_to_tsquery(...)`, top ~20)
-  - [ ] Reciprocal Rank Fusion (RRF) to combine both result sets in app code
-- [ ] `GET /api/health` — liveness check (Supabase reachable, not Qdrant — see note above)
-- [ ] `GET /api/specs` — list indexed specs for UI dropdown/filter
-- [ ] Minimal `POST /api/query` that returns **raw fused retrieval results only, no LLM yet** — validate retrieval quality first (per Section 13, Day 2 plan)
+- [x] `services/supabaseClient.ts` — typed client init
+- [x] `services/retriever.ts`:
+  - [x] Query embedding step
+  - [x] Vector similarity query (`embedding <=> query_embedding`, top ~20)
+  - [x] Keyword query (`fts @@ websearch_to_tsquery(...)`, top ~20)
+  - [x] Reciprocal Rank Fusion (RRF) to combine both result sets in app code
+- [x] `GET /api/health` — liveness check (Supabase reachable, not Qdrant — see note above)
+- [x] `GET /api/specs` — list indexed specs for UI dropdown/filter
+- [x] Minimal `POST /api/query` that returns **raw fused retrieval results only, no LLM yet** — validate retrieval quality first (per Section 13, Day 2 plan)
 - [ ] Manually test 5–10 questions against raw retrieval output; confirm the right clause shows up in top-k for known-answer questions
 - [ ] (Stretch, optional) Cohere rerank step on fused top ~20 → top 5 — cut if time-constrained (Section 13 cut list already excludes this from MVP)
 
