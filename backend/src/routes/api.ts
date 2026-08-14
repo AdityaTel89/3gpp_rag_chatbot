@@ -1,6 +1,9 @@
 import { Router, Request, Response } from "express";
 import { supabase } from "../services/supabaseClient";
 import { hybridSearch } from "../services/retriever";
+import { generateAnswer } from "../services/llm";
+import { checkGrounding } from "../services/groundingCheck";
+import { SpecChunk, QueryResponse, Citation } from "../../../shared/types";
 
 const router = Router();
 
@@ -43,7 +46,9 @@ router.get("/specs", async (req: Request, res: Response) => {
     }
 });
 
-// Raw hybrid search query (Phase 2 - No LLM yet)
+// ... existing code up to specs route ...
+
+// Full LLM Query Pipeline (Phase 3)
 router.post("/query", async (req: Request, res: Response): Promise<any> => {
     try {
         const { query, limit = 10 } = req.body;
@@ -51,14 +56,79 @@ router.post("/query", async (req: Request, res: Response): Promise<any> => {
             return res.status(400).json({ error: "Missing or invalid 'query' string in body" });
         }
 
+        // 1. Hybrid Search
         const results = await hybridSearch(query, limit);
 
-        // Return raw results for manual inspection and verification
-        res.json({
-            query,
-            count: results.length,
-            results
-        });
+        // Map RetrievalResult to SpecChunk for shared types
+        const chunks: SpecChunk[] = results.map(r => ({
+            id: r.id,
+            spec_id: r.spec_id,
+            version: r.release,
+            clause_number: r.clause_number,
+            clause_title: r.clause_title || "",
+            page_number: r.page_number || 1,
+            chunk_index: r.chunk_index,
+            content: r.text
+        }));
+
+        // 2. Confidence Gate
+        // Normalize RRF score (max theoretical is around ~0.033 for rank 1+1, we'll use a relative heuristic or direct threshold)
+        // Let's use a simple threshold on the raw RRF score for now, e.g., 0.015
+        const topScore = results.length > 0 ? results[0].score : 0;
+        const confidenceThreshold = 0.015;
+        const isConfident = topScore >= confidenceThreshold;
+
+        // 3. Topic Consistency Check (Simple keyword heuristic)
+        const telecomKeywords = ["3gpp", "ue", "gnb", "enb", "rrc", "5g", "nr", "lte", "network", "cell", "bearer", "pdu", "smf", "amf", "upf"];
+        const queryLower = query.toLowerCase();
+        const isTopicConsistent = telecomKeywords.some(kw => queryLower.includes(kw));
+
+        if (!isConfident || !isTopicConsistent || chunks.length === 0) {
+            const response: QueryResponse = {
+                answer: "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+                citations: [],
+                confidence: topScore, // We'll pass the raw score or normalized
+                abstained: true
+            };
+            return res.json(response);
+        }
+
+        // 4. LLM Generation
+        const answer = await generateAnswer(query, chunks);
+
+        // 5. Grounding Check
+        const groundingResult = checkGrounding(answer, chunks);
+        
+        let finalAnswer = answer;
+        let abstained = false;
+        const abstainMessage = "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.";
+
+        if (!groundingResult.isGrounded) {
+            console.warn(`[api/query] Grounding failed: ${groundingResult.reason}`);
+            // Fallback to abstention if it hallucinates
+            finalAnswer = abstainMessage;
+            abstained = true;
+        } else if (finalAnswer.includes(abstainMessage)) {
+            // The LLM followed instructions and intentionally abstained
+            abstained = true;
+        }
+
+        // Build citations array (only if we didn't abstain)
+        const citations: Citation[] = abstained ? [] : chunks.map(c => ({
+            spec: c.spec_id,
+            clause: `${c.clause_number} — ${c.clause_title}`,
+            page: c.page_number,
+            snippet: c.content.substring(0, 150) + "..."
+        }));
+
+        const response: QueryResponse = {
+            answer: finalAnswer,
+            citations,
+            confidence: topScore,
+            abstained
+        };
+
+        res.json(response);
     } catch (err: any) {
         console.error("[api/query] Error:", err.message);
         res.status(500).json({ error: "Failed to process query" });

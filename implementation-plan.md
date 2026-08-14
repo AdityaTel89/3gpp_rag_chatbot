@@ -66,17 +66,17 @@ Reference: Section 4.2 (steps 1–6), Section 7.
 
 Reference: Section 4.2 (steps 6–11), Section 5.
 
-- [ ] Confidence gate: implement threshold on fused/top score; skip generation and return abstain if below threshold (Layer 3, Section 5)
-- [ ] Topic-consistency check (optional/simple keyword-set heuristic) as a second abstain trigger
-- [ ] `prompts/` — system prompt enforcing: answer only from context, cite clause per claim, say "not found" if absent, never use outside knowledge
-- [ ] Few-shot abstention example embedded in the prompt
-- [ ] `services/llm.ts` — Groq or Gemini call wrapper; request inline citation markers referencing chunk numbers
-- [ ] `services/groundingCheck.ts`:
-  - [ ] Verify every citation marker maps to a real retrieved chunk (no invented IDs)
-  - [ ] Lexical-overlap heuristic: each answer sentence checked against retrieved chunk text; flag ungrounded sentences
-  - [ ] On grounding-check failure → abstain or caveat the answer
-- [ ] Wire full `POST /api/query` pipeline: embed → hybrid retrieve → RRF → confidence gate → prompt build → LLM call → grounding check → response
-- [ ] Response shape matches `QueryResponse`: `{ answer, citations: [{spec, clause, page}], confidence, abstained }`
+- [x] Confidence gate: implement threshold on fused/top score; skip generation and return abstain if below threshold (Layer 3, Section 5)
+- [x] Topic-consistency check (optional/simple keyword-set heuristic) as a second abstain trigger
+- [x] `prompts/` — system prompt enforcing: answer only from context, cite clause per claim, say "not found" if absent, never use outside knowledge
+- [x] Few-shot abstention example embedded in the prompt
+- [x] `services/llm.ts` — Groq or Gemini call wrapper; request inline citation markers referencing chunk numbers
+- [x] `services/groundingCheck.ts`:
+  - [x] Verify every citation marker maps to a real retrieved chunk (no invented IDs)
+  - [x] Lexical-overlap heuristic: each answer sentence checked against retrieved chunk text; flag ungrounded sentences
+  - [x] On grounding-check failure → abstain or caveat the answer
+- [x] Wire full `POST /api/query` pipeline: embed → hybrid retrieve → RRF → confidence gate → prompt build → LLM call → grounding check → response
+- [x] Response shape matches `QueryResponse`: `{ answer, citations: [{spec, clause, page}], confidence, abstained }`
 - [ ] `POST /api/ingest` + `GET /api/ingest/status` (admin/dev endpoints, if not already covered by the CLI script)
 
 **Exit criteria:** end-to-end `/api/query` returns grounded, cited answers for in-scope questions and abstains cleanly for out-of-scope ones, tested manually with curl/Postman.
