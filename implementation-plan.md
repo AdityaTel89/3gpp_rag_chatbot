@@ -128,9 +128,9 @@ Reference: Section 11.
 
 Reference: Section 12.
 
-- [ ] `backend/Dockerfile`
-- [ ] `frontend/Dockerfile`
-- [ ] `docker-compose.yml` — backend + frontend only (no local DB container; Supabase is hosted)
+- [x] `backend/Dockerfile`
+- [x] `frontend/Dockerfile`
+- [x] `docker-compose.yml` — backend + frontend only (no local DB container; Supabase is hosted)
 - [ ] Fresh-clone test: `docker compose up` from a clean checkout, confirm it works end-to-end
 - [ ] (Optional, only if a public demo is wanted) Deploy backend to Render/Railway free tier, frontend to Vercel free tier, both pointed at the same Supabase project
 
