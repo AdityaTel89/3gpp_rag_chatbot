@@ -1,4 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* Application base styles will be added in Phase 4 */
+@theme {
+  --color-mavenir-blue: #087BC7;
+  --color-mavenir-blue-hover: #0566A6;
+  --color-mavenir-dark: #121E2A;
+  --color-mavenir-light: #F4F7F9;
+  --color-mavenir-red: #E31837;
+  --font-sans: 'Poppins', sans-serif;
+}
 
+@layer base {
+  body {
+    @apply font-sans bg-mavenir-light text-mavenir-dark antialiased;
+  }
+}

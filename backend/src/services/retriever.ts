@@ -24,12 +24,13 @@ export async function getQueryEmbedding(query: string): Promise<number[]> {
 /**
  * Searches the vector index using cosine similarity.
  */
-export async function vectorSearch(embedding: number[], limit: number = 20): Promise<any[]> {
+export async function vectorSearch(embedding: number[], limit: number = 20, specFilter?: string): Promise<any[]> {
     const { data, error } = await supabase.rpc("match_chunks_vector", {
         // pgvector in Supabase often works best passing the raw array directly, 
         // but if it fails, it can be cast to string: `[${embedding.join(",")}]`
         query_embedding: embedding as any, 
-        match_limit: limit
+        match_limit: limit,
+        filter_spec_id: specFilter || null
     });
 
     if (error) {
@@ -42,16 +43,21 @@ export async function vectorSearch(embedding: number[], limit: number = 20): Pro
 /**
  * Searches using full-text search (BM25-style keyword search).
  */
-export async function keywordSearch(query: string, limit: number = 20): Promise<any[]> {
-    const { data, error } = await supabase
+export async function keywordSearch(query: string, limit: number = 20, specFilter?: string): Promise<any[]> {
+    let queryBuilder = supabase
         .from("spec_chunks")
         .select("id, spec_id, release, clause_number, clause_title, page_number, chunk_index, text")
         // Use the generated 'fts' column directly
         .textSearch("fts", query, {
             type: "websearch",
             config: "english"
-        })
-        .limit(limit);
+        });
+
+    if (specFilter) {
+        queryBuilder = queryBuilder.eq("spec_id", specFilter);
+    }
+
+    const { data, error } = await queryBuilder.limit(limit);
 
     if (error) {
         console.error("[retriever] Keyword search error:", error);
@@ -63,7 +69,7 @@ export async function keywordSearch(query: string, limit: number = 20): Promise<
 /**
  * Performs a hybrid search (vector + keyword) and fuses results using Reciprocal Rank Fusion (RRF).
  */
-export async function hybridSearch(query: string, limit: number = 10): Promise<RetrievalResult[]> {
+export async function hybridSearch(query: string, limit: number = 10, specFilter?: string): Promise<RetrievalResult[]> {
     console.log(`[retriever] Getting embedding for query: "${query}"`);
     const embedding = await getQueryEmbedding(query);
 
@@ -71,8 +77,8 @@ export async function hybridSearch(query: string, limit: number = 10): Promise<R
     // Retrieve a larger candidate pool before fusing
     const CANDIDATE_LIMIT = 30;
     const [vectorResults, keywordResults] = await Promise.all([
-        vectorSearch(embedding, CANDIDATE_LIMIT),
-        keywordSearch(query, CANDIDATE_LIMIT)
+        vectorSearch(embedding, CANDIDATE_LIMIT, specFilter),
+        keywordSearch(query, CANDIDATE_LIMIT, specFilter)
     ]);
 
     console.log(`[retriever] Found ${vectorResults.length} vector hits, ${keywordResults.length} keyword hits.`);

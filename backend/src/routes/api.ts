@@ -51,13 +51,13 @@ router.get("/specs", async (req: Request, res: Response) => {
 // Full LLM Query Pipeline (Phase 3)
 router.post("/query", async (req: Request, res: Response): Promise<any> => {
     try {
-        const { query, limit = 10 } = req.body;
-        if (!query || typeof query !== "string") {
-            return res.status(400).json({ error: "Missing or invalid 'query' string in body" });
+        const { question, spec_filter, limit = 10 } = req.body;
+        if (!question || typeof question !== "string") {
+            return res.status(400).json({ error: "Missing or invalid 'question' string in body" });
         }
 
         // 1. Hybrid Search
-        const results = await hybridSearch(query, limit);
+        const results = await hybridSearch(question, limit, spec_filter);
 
         // Map RetrievalResult to SpecChunk for shared types
         const chunks: SpecChunk[] = results.map(r => ({
@@ -80,7 +80,7 @@ router.post("/query", async (req: Request, res: Response): Promise<any> => {
 
         // 3. Topic Consistency Check (Simple keyword heuristic)
         const telecomKeywords = ["3gpp", "ue", "gnb", "enb", "rrc", "5g", "nr", "lte", "network", "cell", "bearer", "pdu", "smf", "amf", "upf"];
-        const queryLower = query.toLowerCase();
+        const queryLower = question.toLowerCase();
         const isTopicConsistent = telecomKeywords.some(kw => queryLower.includes(kw));
 
         if (!isConfident || !isTopicConsistent || chunks.length === 0) {
@@ -94,7 +94,7 @@ router.post("/query", async (req: Request, res: Response): Promise<any> => {
         }
 
         // 4. LLM Generation
-        const answer = await generateAnswer(query, chunks);
+        const answer = await generateAnswer(question, chunks);
 
         // 5. Grounding Check
         const groundingResult = checkGrounding(answer, chunks);

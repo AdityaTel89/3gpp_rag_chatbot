@@ -1,7 +1,8 @@
 -- Vector similarity search for RAG
 CREATE OR REPLACE FUNCTION match_chunks_vector (
   query_embedding vector(384),
-  match_limit int DEFAULT 20
+  match_limit int DEFAULT 20,
+  filter_spec_id text DEFAULT NULL
 ) RETURNS TABLE (
   id uuid,
   spec_id text,
@@ -28,6 +29,7 @@ BEGIN
     spec_chunks.text,
     1 - (spec_chunks.embedding <=> query_embedding) AS similarity
   FROM spec_chunks
+  WHERE filter_spec_id IS NULL OR spec_chunks.spec_id = filter_spec_id
   ORDER BY spec_chunks.embedding <=> query_embedding
   LIMIT match_limit;
 END;
