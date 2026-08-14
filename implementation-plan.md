@@ -142,18 +142,18 @@ Reference: Section 12.
 
 Reference: Section 13 (definition of done), Section 14.
 
-- [ ] `README.md` — architecture summary, setup instructions, how to run ingestion, how to run the app, eval results table
-- [ ] Explicitly document the cut list (Section 13) and why each cut was reasonable for a 4-day MVP
-- [ ] Prepare talking points for each of the 10 likely interview questions (Section 14), grounded in your actual eval numbers and design choices
+- [x] `README.md` — architecture summary, setup instructions, how to run ingestion, how to run the app, eval results table
+- [x] Explicitly document the cut list (Section 13) and why each cut was reasonable for a 4-day MVP
+- [x] Prepare talking points for each of the 10 likely interview questions (Section 14), grounded in your actual eval numbers and design choices
 - [ ] Record a short demo/walkthrough if required
-- [ ] Final review: does the system meet the Section 13 "Definition of done" checklist verbatim?
-  - [ ] Working local system
-  - [ ] 2 specs indexed
-  - [ ] Hybrid retrieval
-  - [ ] Grounded generation with citations
-  - [ ] Functioning abstention
-  - [ ] Documented evaluation table with real numbers
-  - [ ] Written explanation of trade-offs made under time constraints
+- [x] Final review: does the system meet the Section 13 "Definition of done" checklist verbatim?
+  - [x] Working local system
+  - [x] 2 specs indexed
+  - [x] Hybrid retrieval
+  - [x] Grounded generation with citations
+  - [x] Functioning abstention
+  - [x] Documented evaluation table with real numbers
+  - [x] Written explanation of trade-offs made under time constraints
 
 ---
 

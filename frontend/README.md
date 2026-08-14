@@ -1,32 +1,28 @@
-# React + TypeScript + Vite
+# 3GPP RAG Chatbot - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This is the frontend application for the 3GPP RAG Chatbot, built with React, Vite, TypeScript, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
+- **Chat Interface**: Single-page UI for submitting questions to the RAG backend.
+- **Citation Chips**: Clickable inline citations pointing to specific 3GPP specs, clauses, and pages.
+- **Abstention Banner**: Visually distinct state indicating when the system abstains due to low confidence or missing context.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Setup and Running Locally
 
-## React Compiler
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Expanding the Oxlint configuration
+3. Build for production:
+   ```bash
+   npm run build
+   ```
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Environment
+Ensure the backend API is running locally (default: `http://localhost:3001`) or configured via your environment setup in Docker.
