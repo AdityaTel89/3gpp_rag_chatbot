@@ -1,6 +1,8 @@
-// backend/src/services/upsertChunks.ts
 import { supabase } from "./supabaseClient";
 import { Chunk } from "./chunker";
+
+const BATCH_SIZE = 100;
+const MAX_RETRIES = 3;
 
 export async function upsertChunks(
     chunks: Chunk[],
@@ -8,6 +10,18 @@ export async function upsertChunks(
     specId: string,
     release: string
 ) {
+    // 1. Clear any existing chunks for this spec to prevent duplicates on re-ingestion
+    console.log(`[upsertChunks] Removing any existing chunks for spec "${specId}"...`);
+    const { error: deleteError } = await supabase
+        .from("spec_chunks")
+        .delete()
+        .eq("spec_id", specId);
+
+    if (deleteError) {
+        console.warn(`[upsertChunks] Warning while clearing existing spec chunks: ${deleteError.message}`);
+    }
+
+    // 2. Prepare payload
     const rows = chunks.map((chunk, i) => ({
         spec_id: specId,
         release,
@@ -20,11 +34,32 @@ export async function upsertChunks(
         embedding: embeddings[i],
     }));
 
-    const batchSize = 100;
-    for (let i = 0; i < rows.length; i += batchSize) {
-        const batch = rows.slice(i, i + batchSize);
-        const { error } = await supabase.from("spec_chunks").insert(batch);
-        if (error) throw error;
-        console.log(`Upserted ${i + batch.length}/${rows.length} chunks`);
+    let inserted = 0;
+
+    // 3. Insert in batches
+    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+        const batch = rows.slice(i, i + BATCH_SIZE);
+        let lastError: any = null;
+
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            const { error } = await supabase
+                .from("spec_chunks")
+                .insert(batch);
+
+            if (!error) {
+                lastError = null;
+                break;
+            }
+            lastError = error;
+            if (attempt < MAX_RETRIES) {
+                console.warn(`[upsertChunks] Batch ${Math.floor(i / BATCH_SIZE) + 1} failed (attempt ${attempt}): ${error.message}. Retrying in ${attempt}s...`);
+                await new Promise(r => setTimeout(r, 1000 * attempt));
+            }
+        }
+
+        if (lastError) throw lastError;
+
+        inserted += batch.length;
+        console.log(`[upsertChunks] Inserted ${inserted}/${rows.length} rows`);
     }
 }

@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "ingest": "ts-node scripts/ingest.ts"
+    "verify": "tsx scripts/verify-connection.ts",
+    "spot-check": "tsx scripts/spot-check.ts",
+    "ingest": "tsx scripts/ingest.ts",
+    "ingest:dry": "tsx scripts/ingest.ts --dry-run",
+    "ingest:inspect": "tsx scripts/ingest.ts --dry-run --inspect 5"
   },
   "keywords": [],
   "author": "",
@@ -15,12 +19,14 @@
     "@types/node": "^26.2.0",
     "@types/pdf-parse": "^1.1.5",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
     "@xenova/transformers": "^2.17.2",
     "dotenv": "^17.4.2",
-    "pdf-parse": "^2.4.5"
+    "pdf-parse": "^1.1.1"
   }
 }
