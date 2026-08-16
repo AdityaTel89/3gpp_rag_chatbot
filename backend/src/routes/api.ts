@@ -25,21 +25,33 @@ router.get("/health", async (req: Request, res: Response) => {
 // List indexed specs
 router.get("/specs", async (req: Request, res: Response) => {
     try {
-        // Unfortunately Supabase JS does not have `.distinct()` out of the box,
-        // so we fetch a small subset of fields or we can create an RPC for this later.
-        // For now, we'll fetch spec_id and release and deduplicate in code.
-        const { data, error } = await supabase.from("spec_chunks").select("spec_id, release");
-        if (error) throw error;
+        // Fast skip-scan across distinct spec_id entries using ordering and limit(1)
+        const uniqueSpecs: Array<{ spec_id: string; release: string }> = [];
+        let lastSpecId = "";
 
-        const uniqueSpecs = new Map<string, any>();
-        data?.forEach((row: any) => {
-            const key = `${row.spec_id}-${row.release}`;
-            if (!uniqueSpecs.has(key)) {
-                uniqueSpecs.set(key, { spec_id: row.spec_id, release: row.release });
+        while (true) {
+            let query = supabase
+                .from("spec_chunks")
+                .select("spec_id, release")
+                .order("spec_id", { ascending: true })
+                .limit(1);
+
+            if (lastSpecId) {
+                query = query.gt("spec_id", lastSpecId);
             }
-        });
 
-        res.json(Array.from(uniqueSpecs.values()));
+            const { data, error } = await query;
+            if (error) throw error;
+            if (!data || data.length === 0) break;
+
+            uniqueSpecs.push({
+                spec_id: data[0].spec_id,
+                release: data[0].release
+            });
+            lastSpecId = data[0].spec_id;
+        }
+
+        res.json(uniqueSpecs);
     } catch (err: any) {
         console.error("[api/specs] Error:", err.message);
         res.status(500).json({ error: "Failed to fetch specs" });

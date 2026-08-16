@@ -137,39 +137,4 @@ cd backend
 npm run eval
 ```
 
----
-
-## ☁️ Production Deployment Guide
-
-### A. Deploy Backend to Render
-
-1. Create a free account at [render.com](https://render.com).
-2. Click **New + > Web Service** and connect your GitHub repository.
-3. Configure the service settings:
-   - **Name**: `3gpp-rag-backend`
-   - **Root Directory**: `backend`
-   - **Runtime**: `Node`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm start`
-4. In **Environment Variables**, add:
-   - `SUPABASE_URL`: `https://your-project.supabase.co`
-   - `SUPABASE_SERVICE_KEY`: `your-supabase-service-role-key`
-   - `GROQ_API_KEY`: `your-groq-api-key`
-   - `PORT`: `10000`
-5. Click **Create Web Service**. Once deployed, copy your public backend URL (e.g., `https://3gpp-rag-backend.onrender.com`).
-
----
-
-### B. Deploy Frontend to Vercel
-
-1. Create a free account at [vercel.com](https://vercel.com).
-2. Click **Add New > Project** and import your GitHub repository.
-3. Configure the build settings:
-   - **Framework Preset**: `Vite`
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-4. Under **Environment Variables**, add:
-   - `VITE_API_URL`: `https://3gpp-rag-backend.onrender.com` *(your Render backend URL)*
-5. Click **Deploy**. Vercel will provide an SSL-secured production URL (e.g., `https://3gpp-rag-chatbot.vercel.app`).
 
