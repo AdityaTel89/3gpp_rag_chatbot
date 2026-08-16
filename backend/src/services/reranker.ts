@@ -7,8 +7,8 @@ const MODEL_ID = "Xenova/bge-reranker-base";
 
 export async function getReranker() {
     if (!modelPromise || !tokenizerPromise) {
-        console.log(`[reranker] Loading ${MODEL_ID} model...`);
-        modelPromise = AutoModelForSequenceClassification.from_pretrained(MODEL_ID);
+        console.log(`[reranker] Loading ${MODEL_ID} model (quantized)...`);
+        modelPromise = AutoModelForSequenceClassification.from_pretrained(MODEL_ID, { quantized: true });
         tokenizerPromise = AutoTokenizer.from_pretrained(MODEL_ID);
     }
     const [model, tokenizer] = await Promise.all([modelPromise, tokenizerPromise]);

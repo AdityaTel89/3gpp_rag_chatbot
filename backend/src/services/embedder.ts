@@ -4,8 +4,8 @@ let embedderPromise: Promise<any> | null = null;
 
 function getEmbedder() {
     if (!embedderPromise) {
-        console.log("[embedder] Loading bge-m3 model (first run downloads ~1GB+)...");
-        embedderPromise = pipeline("feature-extraction", "Xenova/bge-m3");
+        console.log("[embedder] Loading bge-m3 model (quantized)...");
+        embedderPromise = pipeline("feature-extraction", "Xenova/bge-m3", { quantized: true });
     }
     return embedderPromise;
 }
