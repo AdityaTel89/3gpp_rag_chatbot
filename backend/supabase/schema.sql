@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Main chunks table for 3GPP spec content
--- embedding dimension: 384 (all-MiniLM-L6-v2)
+-- embedding dimension: 1024 (bge-m3)
 CREATE TABLE IF NOT EXISTS spec_chunks (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   spec_id       TEXT NOT NULL,           -- e.g. "TS 23.501"
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS spec_chunks (
   chunk_index   INT,                     -- 0-based index within clause
   text          TEXT NOT NULL,           -- raw chunk text (display + full-text search)
   char_count    INT,
-  embedding     VECTOR(384),             -- MiniLM dim (change if switching models)
+  embedding     VECTOR(1024),            -- bge-m3 dim
   fts           TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', text)) STORED,
   created_at    TIMESTAMPTZ DEFAULT NOW(),
 
@@ -32,3 +32,13 @@ CREATE INDEX IF NOT EXISTS idx_spec_chunks_fts
 -- Composite index for metadata filtering (spec_id + clause_number)
 CREATE INDEX IF NOT EXISTS idx_spec_chunks_spec_clause
   ON spec_chunks (spec_id, clause_number);
+
+-- Table for acronyms and definitions
+CREATE TABLE IF NOT EXISTS spec_acronyms (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  spec_id    TEXT NOT NULL,
+  acronym    TEXT NOT NULL,
+  expansion  TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (spec_id, acronym)
+);

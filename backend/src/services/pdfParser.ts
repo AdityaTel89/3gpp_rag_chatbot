@@ -24,6 +24,11 @@ function cleanText(raw: string): string {
     return raw
         .replace(BOILERPLATE_RE, "")
         .replace(/\n{3,}/g, "\n\n")
+        // Fix spaced-out acronyms from PDF OCR: "g N B" → "gNB", "A M F" → "AMF"
+        // Matches 2-4 single uppercase letters separated by single spaces
+        .replace(/\b([A-Z]) ([A-Z]) ([A-Z]) ([A-Z])\b/g, "$1$2$3$4")
+        .replace(/\b([A-Z]) ([A-Z]) ([A-Z])\b/g, "$1$2$3")
+        .replace(/\b([A-Z]) ([A-Z])\b/g, "$1$2")
         .trim();
 }
 

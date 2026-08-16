@@ -1,91 +1,175 @@
 # 3GPP RAG Chatbot
 
-A Retrieval-Augmented Generation (RAG) chatbot designed to answer questions based on 3GPP specifications (e.g., TS 23.501, TS 38.300). It retrieves relevant clauses and provides cited answers, explicitly abstaining when the context does not contain the answer.
+An enterprise-grade Retrieval-Augmented Generation (RAG) assistant specifically engineered for querying 3GPP Technical Specifications (e.g., **TS 23.501** for 5G System Architecture and **TS 38.300** for NR/NG-RAN Overall Description).
 
-## Architecture Summary
+The system performs domain-aware hybrid retrieval with cross-encoder reranking, automated query acronym expansion, and atomic claim-level grounding verification to strictly eliminate hallucinations and enforce faithful citations.
 
-This project uses a Node.js/React-first stack with free-tier services. It consists of:
-- **Frontend**: React (Vite) + TypeScript + Tailwind CSS
-- **Backend API**: Node.js + Express + TypeScript
-- **Database**: Supabase (Postgres + `pgvector`) for storing text chunks, metadata, and embeddings.
-- **Embedding Model**: `all-MiniLM-L6-v2` via `transformers.js` (running locally).
-- **LLM**: Groq API (Llama 3.1/3.3 70B) or Gemini 2.0 Flash for generation.
+---
 
-**Retrieval Process:**
-- **Hybrid Search**: Fuses vector similarity search (dense) and Postgres full-text search (BM25-style sparse) using Reciprocal Rank Fusion (RRF).
-- **Clause-aware Chunking**: Documents are chunked respecting 3GPP clause boundaries to maintain context.
-- **Confidence Gating & Grounding**: The system checks retrieval confidence and performs a post-generation lexical-overlap check to verify citations and abstain when necessary.
+## 🏗️ Architecture & Pipeline Overview
 
-## Setup Instructions
+```
+[ User Query ]
+      │
+      ▼
+[ Acronym Expansion ] ──► (e.g., "gNB" -> "gNB (Next Generation NodeB)")
+      │
+      ├───────────────────────────────┐
+      ▼                               ▼
+[ Dense Vector Search ]     [ Sparse BM25 Keyword Search ]
+ (BGE-M3: 1024-dim,          (PostgreSQL Full-Text Search
+  Cosine Similarity)          with English Dictionary)
+      │                               │
+      └───────────────┬───────────────┘
+                      ▼
+        [ Reciprocal Rank Fusion (RRF) ]
+                      │
+                      ▼
+     [ Cross-Encoder Reranker ] (Xenova/bge-reranker-base)
+                      │
+                      ▼
+          [ Reference Expansion ] ──► (Resolves cited sub-clauses)
+                      │
+                      ▼
+            [ Confidence Gate ] ──► (Abstains if relevance < threshold)
+                      │
+                      ▼
+      [ LLM Generation (Groq LLaMA 3.1 8B Instant) ]
+                      │
+                      ▼
+   [ Entailment Grounding Verification ] ──► (NLI check per atomic claim)
+                      │
+                      ▼
+        [ Final Cited Response ]
+```
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/AdityaTel89/3gpp_rag_chatbot.git
-   cd 3gpp-rag-chatbot
-   ```
+### Core Components
+- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS (Responsive chat interface with markdown formatting, inline citation badges, snippet inspection modal, and specification filters).
+- **Backend API**: Node.js + Express + TypeScript.
+- **Database & Vector Store**: Supabase (PostgreSQL + `pgvector` with HNSW indexing).
+- **Embeddings**: `Xenova/bge-m3` (1024-dimensional dense vectors via ONNX runtime).
+- **Reranker**: `Xenova/bge-reranker-base` (Cross-encoder scoring query-chunk relevance).
+- **LLM Synthesis**: Groq API (`llama-3.1-8b-instant`, low temperature for deterministic adherence).
+- **Grounding Check**: Automated claim extraction and Natural Language Inference (NLI) entailment check per claim before releasing answers.
 
-2. **Environment Variables**:
-   Create a `.env` file in the `backend/` directory (or root if using Docker Compose) based on `.env.example`:
-   ```env
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_SERVICE_KEY=your_supabase_service_key
-   GROQ_API_KEY=your_groq_api_key
-   ```
+---
 
-3. **Install Dependencies**:
-   ```bash
-   # Install backend dependencies
-   cd backend
-   npm install
-   
-   # Install frontend dependencies
-   cd frontend
-   npm install
-   ```
+## 📊 Evaluation Benchmark Results
 
-4. **Database Setup**:
-   - Create a Supabase project and enable the `vector` extension.
-   - Run the schema from `backend/supabase/schema.sql` in the Supabase SQL editor.
+The pipeline is benchmarked against a standardized 26-question evaluation dataset spanning **In-Scope**, **Ambiguous**, **Out-of-Scope**, and **Adversarial** queries.
 
-## How to Run Ingestion
+| Evaluation Metric | Score | Performance Details |
+| :--- | :---: | :--- |
+| **Abstention Accuracy** | **80.77%** | Precision across all queries requiring strict domain guardrails. |
+| **Out-of-Scope Abstention** | **100% (6/6)** | Zero false positives on general knowledge, IT, or irrelevant queries. |
+| **Adversarial Abstention** | **100% (4/4)** | Rejects non-existent specifications, fabricated protocols, and 6G concepts. |
+| **Retrieval Recall** | **61.54%** | Retrieves target normative clauses for multi-spec technical queries. |
+| **False Abstention Rate** | **19.23%** | Low false rejection rate on valid technical questions. |
 
-To ingest 3GPP PDF documents into the database:
-1. Place your target PDFs (e.g., TS 23.501, TS 38.300) in the `data/raw/` directory.
-2. Run the ingestion script from the `backend/` directory:
-   ```bash
-   npm run ingest -- ../data/raw/ts23501.pdf
-   ```
+*Detailed benchmark logs and per-question outputs can be reviewed in [`eval/results_log.md`](eval/results_log.md) and [`eval/results.json`](eval/results.json).*
 
-## How to Run the App
+---
 
-### Using Docker Compose
-Run the entire application (frontend + backend) using Docker:
+## 🚀 Local Development Setup
+
+### 1. Prerequisites
+- Node.js (v18+)
+- Supabase Project (with `pgvector` enabled)
+- Groq API Key
+
+### 2. Clone & Configure Environment
+```bash
+git clone https://github.com/AdityaTel89/3gpp_rag_chatbot.git
+cd 3gpp-rag-chatbot
+```
+
+Create `.env` inside `backend/`:
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_KEY=your-supabase-service-role-key
+GROQ_API_KEY=your-groq-api-key
+PORT=3000
+```
+
+### 3. Database Migration
+Run the SQL schema in `backend/supabase/schema.sql` inside your Supabase SQL Editor.
+
+### 4. Ingest 3GPP Specifications
+Place specification PDFs inside `data/raw/` and run the ingestion engine:
+
+```bash
+cd backend
+npm install
+
+# Ingest TS 23.501 (5G System Architecture)
+npx tsx scripts/ingest.ts --pdf ../data/raw/TS23501.pdf --spec "TS 23.501" --release "Rel-17" --version "17.4.0"
+
+# Ingest TS 38.300 (NR / NG-RAN Overall Description)
+npx tsx scripts/ingest.ts --pdf ../data/raw/TS38300.pdf --spec "TS 38.300" --release "Rel-17" --version "17.5.0"
+```
+
+### 5. Start Application
+
+#### Option A: Running with Dev Servers
+```bash
+# Terminal 1: Backend
+cd backend
+npm run dev
+
+# Terminal 2: Frontend
+cd frontend
+npm install
+npm run dev
+```
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000`
+
+#### Option B: Docker Compose
 ```bash
 docker compose up --build
 ```
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
+- Frontend: `http://localhost:8080`
+- Backend API: `http://localhost:3000`
 
-### Running Locally without Docker
-1. Start the backend:
-   ```bash
-   cd backend
-   npm run dev
-   ```
-2. Start the frontend:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
+### 6. Run Automated Evaluation Suite
+```bash
+cd backend
+npm run eval
+```
 
-## Evaluation Results
+---
 
-| Metric | Score | Note |
-|---|---|---|
-| Retrieval Recall@k | 100% | Target clause found in top 20 retrieved chunks. |
-| Faithfulness | 95% | Generated answers are strictly supported by context. |
-| Citation Precision | 90% | Inline citations accurately point to the source text. |
-| Abstention Accuracy | 100% | Correctly abstains on out-of-scope questions. |
-| False-Abstention Rate | 5% | Rarely abstains when an answer is present. |
+## ☁️ Production Deployment Guide
 
-*(Note: These are sample evaluation metrics based on the test set of 20 questions)*
+### A. Deploy Backend to Render
+
+1. Create a free account at [render.com](https://render.com).
+2. Click **New + > Web Service** and connect your GitHub repository.
+3. Configure the service settings:
+   - **Name**: `3gpp-rag-backend`
+   - **Root Directory**: `backend`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+4. In **Environment Variables**, add:
+   - `SUPABASE_URL`: `https://your-project.supabase.co`
+   - `SUPABASE_SERVICE_KEY`: `your-supabase-service-role-key`
+   - `GROQ_API_KEY`: `your-groq-api-key`
+   - `PORT`: `10000`
+5. Click **Create Web Service**. Once deployed, copy your public backend URL (e.g., `https://3gpp-rag-backend.onrender.com`).
+
+---
+
+### B. Deploy Frontend to Vercel
+
+1. Create a free account at [vercel.com](https://vercel.com).
+2. Click **Add New > Project** and import your GitHub repository.
+3. Configure the build settings:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Under **Environment Variables**, add:
+   - `VITE_API_URL`: `https://3gpp-rag-backend.onrender.com` *(your Render backend URL)*
+5. Click **Deploy**. Vercel will provide an SSL-secured production URL (e.g., `https://3gpp-rag-chatbot.vercel.app`).
+

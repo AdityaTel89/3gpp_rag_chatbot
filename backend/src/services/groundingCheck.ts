@@ -1,82 +1,76 @@
-import { SpecChunk } from "../../../shared/types";
+import Groq from "groq-sdk";
+import dotenv from "dotenv";
 
-export interface GroundingResult {
-    isGrounded: boolean;
-    reason?: string;
+dotenv.config();
+
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY || "",
+});
+
+export type EntailmentVerdict = "yes" | "no" | "not_stated";
+
+export interface ClaimVerification {
+    claimText: string;
+    citedChunkId: string;
+    verdict: EntailmentVerdict;
 }
 
 /**
- * Checks if the generated answer is grounded in the provided chunks.
- * Uses a heuristic:
- * 1. Ensure any inline citations [1], [2] actually map to an index in the chunks array.
- * 2. If it's a known abstention string, it's safe (returns isGrounded = true).
+ * Checks if the generated claims are entailed by the provided chunks.
  */
-export function checkGrounding(answer: string, chunks: SpecChunk[]): GroundingResult {
-    // If it's the exact abstention message, it's considered safely handled (not a hallucination).
-    if (answer.includes("I'm sorry, I cannot answer this question based on the provided 3GPP specifications")) {
-        return { isGrounded: true };
+export async function verifyClaims(
+    claims: { text: string; citedChunkId: string }[],
+    chunkMap: Map<string, string>
+): Promise<ClaimVerification[]> {
+    if (!process.env.GROQ_API_KEY) {
+        throw new Error("GROQ_API_KEY is not configured.");
     }
 
-    // 1. Verify Citation Indices
-    // Find all [d+] patterns in the answer
-    const citationRegex = /\[(\d+)\]/g;
-    let match;
-    const citedIndices = new Set<number>();
-    
-    while ((match = citationRegex.exec(answer)) !== null) {
-        // Parse the number (it's 1-based in the prompt, so subtract 1 for 0-based array index)
-        const index = parseInt(match[1], 10) - 1;
-        citedIndices.add(index);
-    }
+    const promises = claims.map(async (claim) => {
+        const chunkText = chunkMap.get(claim.citedChunkId);
 
-    // If there are no citations but the answer is not an abstention, we might flag it as ungrounded.
-    // However, sometimes it provides general context. Let's be strict: if it's answering, it must cite.
-    if (citedIndices.size === 0) {
-        return { 
-            isGrounded: false, 
-            reason: "The answer contains no citations." 
-        };
-    }
-
-    for (const index of citedIndices) {
-        if (index < 0 || index >= chunks.length) {
+        if (!chunkText) {
             return {
-                isGrounded: false,
-                reason: `The answer cited an invalid source index: [${index + 1}]`
+                claimText: claim.text,
+                citedChunkId: claim.citedChunkId,
+                verdict: "not_stated" as EntailmentVerdict
             };
         }
-    }
 
-    // 2. Lexical Overlap (Basic Heuristic)
-    // We expect some non-trivial words in the answer to appear in the context.
-    // For a production system, this could be more sophisticated (e.g., using LLM-as-a-judge).
-    const answerWords = answer.toLowerCase().match(/\b\w{4,}\b/g) || [];
-    let overlapCount = 0;
+        const prompt = `Context: "${chunkText}"\nClaim: "${claim.text}"\nIs the claim entailed by the context? Answer only: yes, no, or not_stated.`;
 
-    // Combine all text from cited chunks
-    const citedText = Array.from(citedIndices)
-        .map(i => chunks[i].content)
-        .join(" ")
-        .toLowerCase();
+        try {
+            const completion = await groq.chat.completions.create({
+                messages: [{ role: "user", content: prompt }],
+                // Use a fast model for entailment
+                model: "llama-3.1-8b-instant",
+                temperature: 0.0,
+                max_tokens: 10,
+            });
 
-    for (const word of answerWords) {
-        // Skip common stop words roughly if needed, but since we require length >= 4, it filters out some.
-        if (citedText.includes(word)) {
-            overlapCount++;
-        }
-    }
+            const answer = (completion.choices[0]?.message?.content || "").trim().toLowerCase();
+            let verdict: EntailmentVerdict = "not_stated";
+            
+            if (answer.includes("yes")) {
+                verdict = "yes";
+            } else if (answer.includes("no") && !answer.includes("not")) {
+                verdict = "no";
+            }
 
-    // Require at least some overlap to be considered grounded (e.g., 20% of significant words)
-    // This is a naive heuristic but works as a first pass.
-    if (answerWords.length > 0) {
-        const overlapRatio = overlapCount / answerWords.length;
-        if (overlapRatio < 0.2) {
             return {
-                isGrounded: false,
-                reason: `Low lexical overlap with cited sources (${Math.round(overlapRatio * 100)}%). Potential hallucination.`
+                claimText: claim.text,
+                citedChunkId: claim.citedChunkId,
+                verdict
+            };
+        } catch (err: any) {
+            console.error(`[verifyClaims] Error verifying claim: ${err.message}`);
+            return {
+                claimText: claim.text,
+                citedChunkId: claim.citedChunkId,
+                verdict: "not_stated" as EntailmentVerdict
             };
         }
-    }
+    });
 
-    return { isGrounded: true };
+    return Promise.all(promises);
 }

@@ -11,10 +11,10 @@ export function ChatPage() {
               <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#087BC7" />
               <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#087BC7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <h1 className="text-2xl font-bold tracking-tight">Mavenir<span className="font-light text-gray-300"> | RAG</span></h1>
+            <h1 className="text-2xl font-bold tracking-tight">Mavenir<span className="font-light text-gray-300"> | Assistant</span></h1>
           </div>
           <div className="text-sm font-medium text-gray-300 hidden md:block">
-            Internal Knowledge Base Prototype
+            Specifications Assistant
           </div>
         </div>
       </header>

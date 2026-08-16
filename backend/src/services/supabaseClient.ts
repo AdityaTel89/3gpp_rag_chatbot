@@ -19,4 +19,14 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 // Export a strongly-typed client
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+    global: {
+        fetch: (url, init) => {
+            return fetch(url, {
+                ...init,
+                // Increase the default timeout for the fetch request
+                signal: AbortSignal.timeout(60000)
+            });
+        }
+    }
+});

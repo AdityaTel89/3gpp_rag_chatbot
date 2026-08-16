@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Filter, Loader2, ChevronDown } from 'lucide-react';
+import { API_BASE } from '../config';
 
 interface SpecFilterDropdownProps {
   selectedSpec: string | undefined;
@@ -19,7 +20,7 @@ export function SpecFilterDropdown({ selectedSpec, onSelect }: SpecFilterDropdow
   useEffect(() => {
     async function fetchSpecs() {
       try {
-        const response = await fetch('/api/specs');
+        const response = await fetch(`${API_BASE}/api/specs`);
         if (response.ok) {
           const data = await response.json();
           setSpecs(data);

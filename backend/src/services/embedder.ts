@@ -4,8 +4,8 @@ let embedderPromise: Promise<any> | null = null;
 
 function getEmbedder() {
     if (!embedderPromise) {
-        console.log("[embedder] Loading all-MiniLM-L6-v2 model (first run downloads ~25MB)...");
-        embedderPromise = pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+        console.log("[embedder] Loading bge-m3 model (first run downloads ~1GB+)...");
+        embedderPromise = pipeline("feature-extraction", "Xenova/bge-m3");
     }
     return embedderPromise;
 }
@@ -13,14 +13,14 @@ function getEmbedder() {
 const BATCH_SIZE = 32;
 
 /**
- * Embed an array of texts using all-MiniLM-L6-v2 (384 dimensions).
+ * Embed an array of texts using bge-m3 (1024 dimensions).
  * Returns a parallel array of embedding vectors.
  * Empty/whitespace-only texts are replaced with a zero vector.
  */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
     const embedder = await getEmbedder();
     const results: number[][] = new Array(texts.length);
-    const ZERO_VEC = new Array(384).fill(0);
+    const ZERO_VEC = new Array(1024).fill(0);
 
     for (let batchStart = 0; batchStart < texts.length; batchStart += BATCH_SIZE) {
         const batchEnd = Math.min(batchStart + BATCH_SIZE, texts.length);

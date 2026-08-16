@@ -29,6 +29,19 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               ? 'bg-mavenir-dark text-white rounded-tr-sm' 
               : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'
           }`}>
+            {!isUser && message.citations && message.citations.length > 0 && !message.abstained && (
+              <div className="mb-4">
+                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                  Sources
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {message.citations.map((citation, index) => (
+                    <CitationCard key={`${message.id}-cite-${index}`} citation={citation} index={index} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {message.abstained && !isUser ? (
               <AbstainNotice message={message.content} />
             ) : (
@@ -57,16 +70,6 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               </div>
             )}
           </div>
-          
-          {/* Citations block below the bubble if any */}
-          {!isUser && message.citations && message.citations.length > 0 && !message.abstained && (
-            <div className="mt-3 w-full max-w-2xl">
-              <div className="text-xs font-semibold text-gray-500 mb-2 px-1">SOURCES</div>
-              {message.citations.map((citation, index) => (
-                <CitationCard key={`${message.id}-cite-${index}`} citation={citation} index={index} />
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>

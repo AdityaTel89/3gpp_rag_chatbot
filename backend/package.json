@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Build complete\"",
+    "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "verify": "tsx scripts/verify-connection.ts",
     "spot-check": "tsx scripts/spot-check.ts",

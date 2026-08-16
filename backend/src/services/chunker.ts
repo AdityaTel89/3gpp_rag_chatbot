@@ -31,6 +31,25 @@ const CLAUSE_HEADING_RE =
 // Known false-positive clause numbers (bare page numbers, release numbers)
 const FALSE_POSITIVE_TITLES = new Set(["Release 17", "Release 16", "Release 15"]);
 
+// Matches version strings used as "clause numbers" in 3GPP change-history tables:
+// e.g. "15.4.0", "16.2.0", "17.1.0" — format: NN.N.N or NN.NN.N
+const VERSION_STRING_RE = /^\d{2}\.\d{1,2}\.\d+$/;
+
+/**
+ * Clean OCR artifacts from a clause title extracted by the regex.
+ * e.g. "R eference s" → "References", "A bb reviations" → "Abbreviations"
+ */
+function cleanTitle(raw: string): string {
+    return raw
+        // Fix spaced uppercase acronyms: "N G - R A N" → "NG-RAN"
+        .replace(/\b([A-Z]) ([A-Z]) ([A-Z]) ([A-Z])\b/g, "$1$2$3$4")
+        .replace(/\b([A-Z]) ([A-Z]) ([A-Z])\b/g, "$1$2$3")
+        .replace(/\b([A-Z]) ([A-Z])\b/g, "$1$2")
+        // Remove mid-word spaces from common OCR splits: "R eference" → "Reference"
+        .replace(/\b([A-Za-z]{1,3}) ([a-z]{2,})/g, "$1$2")
+        .trim();
+}
+
 // Title is a false positive if it's just digits/spaces or a very common word
 function isFalsePositive(clauseNumber: string, title: string): boolean {
     if (FALSE_POSITIVE_TITLES.has(title)) return true;
@@ -38,6 +57,12 @@ function isFalsePositive(clauseNumber: string, title: string): boolean {
     if (title.length < 4) return true;
     // Single capital letter followed by digits (like "N 2", "N 1" — reference labels)
     if (/^[A-Z]\s+\d+/.test(title)) return true;
+    // Reject version-string clause numbers from 3GPP change-history tables (e.g. "15.4.0")
+    if (VERSION_STRING_RE.test(clauseNumber)) return true;
+    // Reject document status / version-header sentences (not normative content)
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes("presented to tsg") || titleLower.includes("tsg approved") ||
+        titleLower.includes("change control") || titleLower.includes("incremented for all")) return true;
     // Clause number that's just a page number (two-digit, matching 1-600)
     const num = parseInt(clauseNumber, 10);
     if (!clauseNumber.includes(".") && num >= 1 && num <= 600) {
@@ -54,6 +79,11 @@ export function detectClauses(pages: ParsedPage[]): Clause[] {
     for (const page of pages) {
         const text = page.text;
 
+        // Skip 3GPP change-history table pages (high density of "RP-XXXXXX" reference IDs)
+        // These pages appear at the end of the spec and contain no normative content.
+        const rpPatternCount = (text.match(/RP\s*-\s*\d{5,6}/g) ?? []).length;
+        if (rpPatternCount > 5) continue;
+
         // Skip clearly ToC pages (very high density of dots from "......." leaders)
         const consecutiveDots = (text.match(/\.{4,}/g) ?? []).length;
         if (consecutiveDots > 3) continue;
@@ -63,7 +93,7 @@ export function detectClauses(pages: ParsedPage[]): Clause[] {
 
         while ((match = CLAUSE_HEADING_RE.exec(text)) !== null) {
             const clauseNumber = match[1];
-            const rawTitle = match[2].trim();
+            const rawTitle = cleanTitle(match[2].trim());
 
             if (isFalsePositive(clauseNumber, rawTitle)) continue;
 

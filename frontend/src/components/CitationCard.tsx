@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import type { Citation } from '../../../shared/types';
-import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 interface CitationCardProps {
   citation: Citation;
@@ -8,43 +7,23 @@ interface CitationCardProps {
 }
 
 export function CitationCard({ citation, index }: CitationCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-2 overflow-hidden hover:border-mavenir-blue transition-colors">
-      <div 
-        className="p-3 flex items-center justify-between cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-center space-x-3">
-          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-mavenir-blue text-white flex items-center justify-center text-xs font-bold">
-            {index + 1}
-          </div>
-          <div>
-            <div className="flex items-center space-x-2 text-sm font-semibold text-mavenir-dark">
-              <FileText className="w-4 h-4 text-mavenir-blue" />
-              <span>{citation.spec}</span>
-              <span className="text-gray-400">•</span>
-              <span>Page {citation.page}</span>
-            </div>
-            <div className="text-xs text-gray-500 mt-0.5 truncate max-w-md">
-              {citation.clause}
-            </div>
-          </div>
-        </div>
-        <button className="text-gray-400 hover:text-mavenir-blue">
-          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-        </button>
+    <div 
+      className="flex items-center space-x-2 bg-white border border-gray-200 rounded-md px-2.5 py-1.5 hover:bg-gray-50 transition-colors cursor-default max-w-[200px] shadow-sm"
+      title={`${citation.spec} - ${citation.clause}`}
+    >
+      <div className="flex-shrink-0 w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">
+        {index + 1}
       </div>
-
-      {isExpanded && (
-        <div className="p-4 bg-white border-t border-gray-100">
-          <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Snippet</div>
-          <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded border border-gray-100 font-mono italic">
-            "{citation.snippet || 'No snippet available.'}"
-          </div>
-        </div>
-      )}
+      <FileText className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+      <div className="flex flex-col min-w-0">
+        <span className="text-xs font-semibold text-gray-700 truncate block">
+          {citation.spec}
+        </span>
+        <span className="text-[10px] text-gray-500 truncate block">
+          Page {citation.page}
+        </span>
+      </div>
     </div>
   );
 }

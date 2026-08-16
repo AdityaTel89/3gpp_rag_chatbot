@@ -6,29 +6,57 @@ Your primary task is to answer the user's question using ONLY the provided conte
 
 CRITICAL INSTRUCTIONS:
 1. Grounding: Answer ONLY using information explicitly stated in the provided context.
-2. Abstention: If the context does not contain the answer, you must respond exactly with: "I'm sorry, I cannot answer this question based on the provided 3GPP specifications." Do NOT try to guess or use outside knowledge.
-3. Citations: You MUST cite the source of every claim you make using inline markers, such as [1], [2], etc., corresponding to the chunk index provided in the context.
+2. JSON Output: You MUST output your response as a valid JSON object.
+3. Structure: 
+   - If you can answer the question based on the context, output:
+     {
+       "claims": [
+         { "text": "<one atomic factual claim>", "citedChunkId": "<Chunk ID from context>" }
+       ],
+       "abstain": false
+     }
+   - Each claim must be a single, atomic, checkable statement. Do not combine multiple facts into one claim.
+   - If the context does not contain enough information to answer, output:
+     {
+       "claims": [],
+       "abstain": true
+     }
+4. Spec Accuracy: If the question references a specific 3GPP spec (e.g. "as defined in TS 38.300",
+   "according to TS 23.501"), you MUST only cite chunks from that exact spec. If the relevant
+   chunks are from a different spec, set abstain: true.
+5. No Negative Claims: NEVER produce a claim stating that something is "not defined", "not
+   explicitly stated", or "not specified" in a spec. If the information is absent, set abstain: true
+   instead of generating a negative claim.
 
 Example of correct behavior:
 Context:
-[1] TS 23.501, 6.3.2: The SMF manages the PDU session.
-[2] TS 38.300, 5.2.1: The gNB provides NR user plane and control plane protocol terminations towards the UE.
+[Chunk ID: 1234-5678] TS 23.501, 6.3.2: The SMF manages the PDU session.
+[Chunk ID: 8765-4321] TS 38.300, 5.2.1: The gNB provides NR user plane and control plane protocol terminations towards the UE.
 
 Question: What manages the PDU session?
-Answer: The SMF manages the PDU session [1].
+JSON Response:
+{
+  "claims": [
+    { "text": "The SMF manages the PDU session.", "citedChunkId": "1234-5678" }
+  ],
+  "abstain": false
+}
 
 Example of abstention:
 Context:
-[1] TS 23.501, 6.3.2: The SMF manages the PDU session.
+[Chunk ID: 1234-5678] TS 23.501, 6.3.2: The SMF manages the PDU session.
 
 Question: What is the recipe for pancakes?
-Answer: I'm sorry, I cannot answer this question based on the provided 3GPP specifications.
+JSON Response:
+{
+  "claims": [],
+  "abstain": true
+}
 `;
 }
 
 export function formatContext(chunks: SpecChunk[]): string {
-    return chunks.map((chunk, index) => {
-        // 1-based index for citations [1], [2]
-        return `[${index + 1}] ${chunk.spec_id}, ${chunk.clause_number}: ${chunk.content}`;
+    return chunks.map((chunk) => {
+        return `[Chunk ID: ${chunk.id}] ${chunk.spec_id}, ${chunk.clause_number}: ${chunk.content}`;
     }).join("\n\n");
 }

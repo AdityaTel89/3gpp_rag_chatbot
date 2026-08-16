@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { supabase } from "../services/supabaseClient";
 import { hybridSearch } from "../services/retriever";
 import { generateAnswer } from "../services/llm";
-import { checkGrounding } from "../services/groundingCheck";
+import { verifyClaims } from "../services/groundingCheck";
 import { SpecChunk, QueryResponse, Citation } from "../../../shared/types";
 
 const router = Router();
@@ -48,6 +48,41 @@ router.get("/specs", async (req: Request, res: Response) => {
 
 // ... existing code up to specs route ...
 
+/**
+ * Infers which spec to search based on vocabulary in the question.
+ * Returns "TS 38.300" for RAN/radio-layer queries, "TS 23.501" for core-network queries,
+ * or undefined (search both) for ambiguous queries.
+ */
+function inferSpecFilter(question: string): string | undefined {
+    const q = question.toLowerCase();
+
+    // TS 38.300 signals — RAN / radio / air-interface
+    const ts38Signals = [
+        "rrc", "ng-ran", "ngran", "gnb", "enb", "nr access", "pdcp sublayer",
+        "rlc sublayer", "mac sublayer", "mac layer", "physical layer",
+        "cu-cp", "cu-up", "centralized unit", "distributed unit",
+        "en-dc", "dual connectivity", "xn interface", "f1 interface",
+        "logical channel", "transport channel", "bearer channel",
+        "handover procedure", "cell reselection", "beamforming",
+        "rrc_idle", "rrc_inactive", "rrc_connected",
+    ];
+
+    // TS 23.501 signals — 5GC / core network
+    const ts23Signals = [
+        "amf", "smf", "upf", "pcf", "nrf", "ausf", "udm", "udr", "nssf",
+        "pdu session", "network slice", "s-nssai", "nsi id", "nsi-id",
+        "roaming", "lbo", "home-routed", "5gc", "n1 interface", "n2 interface",
+        "5g core", "service based", "sbi",
+    ];
+
+    const has38 = ts38Signals.some(kw => q.includes(kw));
+    const has23 = ts23Signals.some(kw => q.includes(kw));
+
+    if (has38 && !has23) return "TS 38.300";
+    if (has23 && !has38) return "TS 23.501";
+    return undefined; // ambiguous — search both specs
+}
+
 // Full LLM Query Pipeline (Phase 3)
 router.post("/query", async (req: Request, res: Response): Promise<any> => {
     try {
@@ -57,13 +92,18 @@ router.post("/query", async (req: Request, res: Response): Promise<any> => {
         }
 
         // 1. Hybrid Search
-        const results = await hybridSearch(question, limit, spec_filter);
+        // Use explicit spec_filter from request body, or infer from question vocabulary
+        const effectiveSpecFilter = spec_filter || inferSpecFilter(question);
+        if (effectiveSpecFilter && !spec_filter) {
+            console.log(`[api/query] Inferred spec filter: ${effectiveSpecFilter}`);
+        }
+        const { results, unresolvedRefs } = await hybridSearch(question, limit, effectiveSpecFilter);
 
         // Map RetrievalResult to SpecChunk for shared types
         const chunks: SpecChunk[] = results.map(r => ({
             id: r.id,
             spec_id: r.spec_id,
-            version: r.release,
+            version: r.spec_version || r.release,
             clause_number: r.clause_number,
             clause_title: r.clause_title || "",
             page_number: r.page_number || 1,
@@ -72,14 +112,27 @@ router.post("/query", async (req: Request, res: Response): Promise<any> => {
         }));
 
         // 2. Confidence Gate
-        // Normalize RRF score (max theoretical is around ~0.033 for rank 1+1, we'll use a relative heuristic or direct threshold)
-        // Let's use a simple threshold on the raw RRF score for now, e.g., 0.015
-        const topScore = results.length > 0 ? results[0].score : 0;
-        const confidenceThreshold = 0.015;
+        // bge-reranker-base outputs raw cross-encoder logits (unbounded, not 0-1).
+        // We apply sigmoid so that logit=0 → 0.5, logit=-1 → ~0.27, logit=1 → ~0.73.
+        // A sigmoid threshold of 0.2 (logit ≈ -1.4) lets through any chunks with a
+        // weak-to-moderate relevance signal, while still blocking clearly irrelevant queries.
+        const rawTopScore = results.length > 0 ? results[0].score : -Infinity;
+        const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
+        const topScore = sigmoid(rawTopScore);
+        const confidenceThreshold = 0.35;  // Raised from 0.2 — reduces adversarial false positives
         const isConfident = topScore >= confidenceThreshold;
 
-        // 3. Topic Consistency Check (Simple keyword heuristic)
-        const telecomKeywords = ["3gpp", "ue", "gnb", "enb", "rrc", "5g", "nr", "lte", "network", "cell", "bearer", "pdu", "smf", "amf", "upf"];
+        // 3. Topic Consistency Check (keyword heuristic — covers both TS 23.501 and TS 38.300 topics)
+        const telecomKeywords = [
+            // General 5G / core
+            "3gpp", "5g", "lte", "nr", "network", "ue", "amf", "smf", "upf", "pdu", "bearer",
+            // RAN / radio
+            "gnb", "enb", "rrc", "cell", "pdcp", "rlc", "mac", "phy",
+            // NG-RAN architecture (TS 38.300 specific)
+            "ng-ran", "ng_ran", "ngran", "cu", "du", "f1", "ngu", "xn", "en-dc", "endc",
+            "dual connectivity", "carrier aggregation", "handover", "beamforming",
+            "channel", "transport channel", "logical channel",
+        ];
         const queryLower = question.toLowerCase();
         const isTopicConsistent = telecomKeywords.some(kw => queryLower.includes(kw));
 
@@ -88,44 +141,77 @@ router.post("/query", async (req: Request, res: Response): Promise<any> => {
                 answer: "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
                 citations: [],
                 confidence: topScore, // We'll pass the raw score or normalized
-                abstained: true
+                abstained: true,
+                unresolvedReferences: unresolvedRefs
             };
             return res.json(response);
         }
 
         // 4. LLM Generation
-        const answer = await generateAnswer(question, chunks);
+        const llmResponse = await generateAnswer(question, chunks, unresolvedRefs);
 
-        // 5. Grounding Check
-        const groundingResult = checkGrounding(answer, chunks);
-        
-        let finalAnswer = answer;
-        let abstained = false;
-        const abstainMessage = "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.";
-
-        if (!groundingResult.isGrounded) {
-            console.warn(`[api/query] Grounding failed: ${groundingResult.reason}`);
-            // Fallback to abstention if it hallucinates
-            finalAnswer = abstainMessage;
-            abstained = true;
-        } else if (finalAnswer.includes(abstainMessage)) {
-            // The LLM followed instructions and intentionally abstained
-            abstained = true;
+        if (llmResponse.abstain || llmResponse.claims.length === 0) {
+            const response: QueryResponse = {
+                answer: "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+                citations: [],
+                confidence: topScore,
+                abstained: true,
+                unresolvedReferences: unresolvedRefs
+            };
+            return res.json(response);
         }
 
-        // Build citations array (only if we didn't abstain)
-        const citations: Citation[] = abstained ? [] : chunks.map(c => ({
-            spec: c.spec_id,
-            clause: `${c.clause_number} — ${c.clause_title}`,
-            page: c.page_number,
-            snippet: c.content.substring(0, 150) + "..."
-        }));
+        // 5. Grounding Check
+        const chunkMap = new Map<string, string>();
+        chunks.forEach(c => chunkMap.set(c.id as string, c.content));
+
+        const verifications = await verifyClaims(llmResponse.claims, chunkMap);
+        
+        const groundedClaims = verifications.filter(v => v.verdict === "yes");
+        const flaggedClaimsData = verifications.filter(v => v.verdict !== "yes");
+
+        if (groundedClaims.length === 0) {
+            const response: QueryResponse = {
+                answer: "I'm sorry, I cannot answer this question based on the provided 3GPP specifications.",
+                citations: [],
+                confidence: topScore,
+                abstained: true,
+                unresolvedReferences: unresolvedRefs,
+                flaggedClaims: flaggedClaimsData.map(f => ({ text: f.claimText, reason: `Entailment check failed (${f.verdict})` }))
+            };
+            return res.json(response);
+        }
+
+        // 6. Format final answer and citations
+        const finalCitations: Citation[] = [];
+        let finalAnswer = "";
+
+        groundedClaims.forEach((claim, index) => {
+            const chunkId = claim.citedChunkId;
+            const chunk = chunks.find(c => c.id === chunkId);
+            
+            finalAnswer += `${claim.claimText} [${index + 1}] `;
+
+            if (chunk) {
+                finalCitations.push({
+                    spec: chunk.spec_id,
+                    specVersion: chunk.version,
+                    clause: `${chunk.clause_number} — ${chunk.clause_title}`,
+                    page: chunk.page_number,
+                    snippet: chunk.content.substring(0, 150) + "..."
+                });
+            }
+        });
 
         const response: QueryResponse = {
-            answer: finalAnswer,
-            citations,
+            answer: finalAnswer.trim(),
+            citations: finalCitations,
             confidence: topScore,
-            abstained
+            abstained: false,
+            unresolvedReferences: unresolvedRefs,
+            flaggedClaims: flaggedClaimsData.length > 0 
+                ? flaggedClaimsData.map(f => ({ text: f.claimText, reason: `Entailment check failed (${f.verdict})` })) 
+                : undefined
         };
 
         res.json(response);

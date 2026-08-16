@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { QueryResponse, QueryRequest, Citation } from '../../../shared/types';
+import { API_BASE } from '../config';
 
 export interface ChatMessage {
   id: string;
@@ -35,7 +36,7 @@ export function useChat() {
         spec_filter: selectedSpec,
       };
 
-      const response = await fetch('/api/query', {
+      const response = await fetch(`${API_BASE}/api/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
