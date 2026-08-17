@@ -1,5 +1,9 @@
 # 3GPP RAG Chatbot
 
+[![CI Quality Checks](https://github.com/AdityaTel89/3gpp_rag_chatbot/actions/workflows/ci.yml/badge.svg)](https://github.com/AdityaTel89/3gpp_rag_chatbot/actions/workflows/ci.yml)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://vercel.com/aditya-telsinges-projects/3gpp-rag-chatbot)
+[![Render Deployment](https://img.shields.io/badge/Render-Deployed-46E3B7?logo=render&logoColor=white)](https://render.com)
+
 An enterprise-grade Retrieval-Augmented Generation (RAG) assistant specifically engineered for querying 3GPP Technical Specifications (e.g., **TS 23.501** for 5G System Architecture and **TS 38.300** for NR/NG-RAN Overall Description).
 
 The system performs domain-aware hybrid retrieval with cross-encoder reranking, automated query acronym expansion, and atomic claim-level grounding verification to strictly eliminate hallucinations and enforce faithful citations.

@@ -22,9 +22,13 @@ app.use(express.json({ limit: "10mb" }));
 // Routes
 app.use("/api", apiRoutes);
 
-// Base route for sanity check
+// Base routes for sanity and health checks
 app.get("/", (req, res) => {
     res.json({ message: "3GPP RAG Chatbot API is running", status: "ok" });
+});
+
+app.get("/health", (req, res) => {
+    res.json({ status: "ok" });
 });
 
 // Global error handler to guarantee JSON response and CORS headers

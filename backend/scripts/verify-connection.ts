@@ -44,7 +44,7 @@ async function main() {
 
     // 2. Check vector extension
     console.log("\n[2] Checking pgvector extension...");
-    const { data: extData, error: extError } = await supabase
+    const { data: extData, error: extError } = await (supabase as any)
         .from("pg_extension")
         .select("extname")
         .eq("extname", "vector");
