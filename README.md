@@ -137,4 +137,15 @@ cd backend
 npm run eval
 ```
 
+---
+
+## 📚 Documentation
+
+Deep-dive documentation and architectural guides are available in the [`docs/`](docs/) directory:
+
+- [System Architecture & Design Specification](docs/3gpp-rag-chatbot-architecture.md)
+- [Step-by-Step Implementation Plan](docs/implementation-plan.md)
+- [RAG Quality Upgrade Plan](docs/rag-quality-upgrade-plan.md)
+
+
 

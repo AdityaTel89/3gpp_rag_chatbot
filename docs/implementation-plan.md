@@ -1,5 +1,5 @@
 # 3GPP RAG Chatbot — Step-by-Step Implementation Plan
-Derived from `3gpp-rag-chatbot-architecture.md`. Use the checkboxes to track progress against the architecture as you build. Nothing here should be implemented yet — this is the tracking checklist for when you do.
+Derived from [`3gpp-rag-chatbot-architecture.md`](3gpp-rag-chatbot-architecture.md). Use the checkboxes to track progress against the architecture as you build. Nothing here should be implemented yet — this is the tracking checklist for when you do.
 
 > **Note on a doc inconsistency:** Sections 3, 7, 8, and 12 of the architecture doc settled on **Supabase/pgvector** as the vector DB (with Postgres full-text search for keyword retrieval). Sections 4.1(step 6), 8 (health check), and 13 (Day 1) still mention "Qdrant" — this looks like leftover text from an earlier draft. This plan uses Supabase/pgvector throughout, consistent with the doc's final decision in Section 2/3/7.
 
